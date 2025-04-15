@@ -15,8 +15,6 @@ def test_matRead(data,opt):
     data = torch.from_numpy(data)
     data = data.type(torch.cuda.FloatTensor)
     data = data.to(opt.device)
-    # data=(data-0.5)*2
-    # data=data.clamp(-1,1)   #归一化
     return data
 
 def getBatch(hsBatch, msBatch, hrhsBatch, bs):

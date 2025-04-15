@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('--input_dir', help='input image dir', default='')
     parser.add_argument('--val_dir', help='testing_data', default='')
     parser.add_argument('--outputs_dir', help='output model dir', default='')
-    parser.add_argument('--batchSize', default=1)
+    parser.add_argument('--batchSize', default=2)
     parser.add_argument('--testBatchSize', default=1)
     parser.add_argument('--epoch', default=2001)
     parser.add_argument('--threads', type=int, default=4, help='number of threads for data loader to use')

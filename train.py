@@ -1,7 +1,7 @@
 import argparse
 import pdb
 import scipy.io as sio
-import modelCAVE_stage2_no_Up as model
+import modelCAVE as model
 import torch
 import torch.nn as nn
 import functions
@@ -16,9 +16,9 @@ from torch.autograd import Variable
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_dir', help='input image dir', default='dataset/dataset-CAVE')
-    parser.add_argument('--val_dir', help='testing_data', default='dataset/dataset-CAVE')
-    parser.add_argument('--outputs_dir', help='output model dir', default='output/model-CAVE_noUp')
+    parser.add_argument('--input_dir', help='input image dir', default='')
+    parser.add_argument('--val_dir', help='testing_data', default='')
+    parser.add_argument('--outputs_dir', help='output model dir', default='')
     parser.add_argument('--batchSize', default=1)
     parser.add_argument('--testBatchSize', default=1)
     parser.add_argument('--epoch', default=2001)
@@ -28,8 +28,6 @@ if __name__ == '__main__':
     parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam. default=0.5')
     parser.add_argument('--lr', type=float, default=0.0001, help='G‘s learning rate')
     parser.add_argument('--gamma', type=float, default=0.1, help='scheduler gamma')
-    # parser.add_argument('--msi_channels', type=int, default=3)
-    # parser.add_argument('--hsi_channels', type=int, default=31)
     opt = parser.parse_args()
     train_start_time = time.time()
     seed = random.randint(1, 10000)
@@ -44,27 +42,21 @@ if __name__ == '__main__':
     train_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize,shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=opt.threads, batch_size=opt.testBatchSize, shuffle=False)
 
-    # 网络初始化：
-    # device = 'cuda' if torch.cuda.is_available() else 'cpu'
     Net = model.Net().to(opt.device)
-    # Net = torch.nn.DataParallel(model.Net(opt).cuda())
     for module in Net.modules():
         if isinstance(module, nn.BatchNorm2d):
             module.eval()
-
-    # 建立优化器
+            
     optimizer = torch.optim.Adam(Net.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[1000], gamma=opt.gamma)
-
-
+    
     loss = torch.nn.L1Loss().to(opt.device)
 
     best_weights = copy.deepcopy(Net.state_dict())
     best_epoch = 0
     best_SAM = 1.0
-    trainvalid_txt = '/mnt/2040bb09-e64f-4d46-af33-3db5783aadf1/yj/paper/compare_three/MGF-Net_unfold/valid_stage2_noUp'
+    trainvalid_txt = ''
     for i in range(opt.epoch):
-        # train
         Net.train()
         epoch_losses = functions.AverageMeter()
         batch_time = functions.AverageMeter()

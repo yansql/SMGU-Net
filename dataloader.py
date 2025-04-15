@@ -20,11 +20,7 @@ def matRead(data):
     # data = data/32701.
     data = data / 64000.
     # data = data / 0.07
-    # data=normalize(data)
     data=torch.from_numpy(data)
-    # data=(data-0.5)*2
-    # data=data.clamp(-1,1)
-
     return data
 
 class Dataset(Dataset):
